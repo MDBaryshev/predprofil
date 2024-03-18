@@ -1,0 +1,43 @@
+import cv2
+import numpy as np
+
+cam = cv2.VideoCapture(0)
+
+success, frame = cam.read()
+if not success:
+    print("Failed to capture image")
+    cam.release()
+    cv2.destroyAllWindows()
+    exit()
+
+print(success, frame.shape, type(frame[10, 20, 1]))
+wide = frame.shape[1]  # Ширина изображения
+height = frame.shape[0]  # Высота изображения
+print(f"Разрешение {wide} на {height}")
+
+# Размеры квадрата
+square_side = 100
+# Вычисляем начальные координаты квадрата, чтобы он был в центре
+start_x = wide // 2 - square_side // 2
+start_y = height // 2 - square_side // 2
+
+while True:
+    # Считываем кадр
+    success, frame = cam.read()
+
+    # Обработка: создаем черный квадрат в середине камеры
+    frame[start_y:start_y+square_side, start_x:start_x+square_side, :] = 0
+
+    # Вывод обработанного кадра
+    cv2.imshow("frame", frame)
+
+    # Обработка нажатий клавиш
+    key = cv2.waitKey(50) & 0xFF
+
+    if key == ord('q'):
+        break
+
+cv2.waitKey(0)
+cam.release()
+cv2.destroyAllWindows()
+cv2.waitKey(10)
