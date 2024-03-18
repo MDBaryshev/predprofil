@@ -1,0 +1,36 @@
+import cv2
+import numpy as np
+
+cam = cv2.VideoCapture(0)
+
+while True:
+    # Считываем кадр
+    success, frame = cam.read()
+    if not success:
+        print("Failed to capture image")
+        break
+
+    # Преобразуем изображение в оттенки серого
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # Применяем размытие для уменьшения шума
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    # Выделяем края с помощью Canny детектора
+    edges = cv2.Canny(blurred, threshold1=30, threshold2=100)
+
+    # Находим контуры на изображении
+    contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Обводим найденные контуры на исходном кадре
+    cv2.drawContours(frame, contours, -1, (255, 255, 0), 1)
+
+    # Вывод обработанного кадра
+    cv2.imshow("Contours", frame)
+
+    # Обработка нажатий клавиш
+    key = cv2.waitKey(1) & 0xFF
+
+    if key == ord('q'):
+        break
+
+cam.release()
+cv2.destroyAllWindows()
